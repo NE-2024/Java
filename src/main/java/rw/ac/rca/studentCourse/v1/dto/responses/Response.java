@@ -15,4 +15,7 @@ import lombok.experimental.Accessors;
 public class Response<T> {
    private ResponseType type;
    private T payload;
+
+    public static record StudentCourseDTO() {
+    }
 }

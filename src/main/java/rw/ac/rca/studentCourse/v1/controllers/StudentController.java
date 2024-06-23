@@ -27,7 +27,7 @@ public class StudentController {
     public ResponseEntity<ApiResponse> getStudentById(@PathVariable UUID student_id) throws Exception{
         return studentService.getStudentById(student_id);
     }
-    // get all students
+    // get all students registered
     @GetMapping("/get_all")
     public ResponseEntity<ApiResponse> getAllStudents() throws Exception{
         return studentService.getAllStudents();

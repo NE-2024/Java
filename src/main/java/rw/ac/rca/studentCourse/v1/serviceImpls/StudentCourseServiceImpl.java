@@ -1,6 +1,9 @@
 package rw.ac.rca.studentCourse.v1.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -63,6 +66,16 @@ public class StudentCourseServiceImpl implements StudentCourseService {
             throw new Exception("Failed to get student courses");
     }
     }
+
+    @Override
+    public Page<StudentCourse> getAllStudentCoursesPaginated(Pageable pageable) throws Exception {
+        try{
+            return studentCourseRepository.findAll(pageable);
+        }catch(Exception exception){
+            ExceptionUtils.handleThrowable(exception);
+            return null;
+        }
+    };
 
     @Override
     public String deleteStudentCourse(UUID studentCourse_id) throws Exception {

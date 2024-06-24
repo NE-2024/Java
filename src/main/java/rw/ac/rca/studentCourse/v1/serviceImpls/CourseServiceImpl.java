@@ -1,6 +1,9 @@
 package rw.ac.rca.studentCourse.v1.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import rw.ac.rca.studentCourse.v1.dto.responses.CourseDTOMapper;
 import rw.ac.rca.studentCourse.v1.dto.responses.StudentCourseMapperDTO;
 import rw.ac.rca.studentCourse.v1.exceptions.ResourceNotFoundException;
 import rw.ac.rca.studentCourse.v1.models.Course;
+import rw.ac.rca.studentCourse.v1.models.Student;
 import rw.ac.rca.studentCourse.v1.payload.ApiResponse;
 import rw.ac.rca.studentCourse.v1.repositories.CourseRepository;
 import rw.ac.rca.studentCourse.v1.services.CourseService;
@@ -52,6 +56,17 @@ public class CourseServiceImpl implements CourseService {
             throw new Exception("Failed to get courses");
         }
     }
+
+    @Override
+    public Page<Course> getAllCoursesPaginated(Pageable pageable) throws Exception {
+        try{
+            return courseRepository.findAll(pageable);
+        }catch(Exception exception){
+            ExceptionUtils.handleThrowable(exception);
+            return null;
+        }
+    };
+
 
     @Override
     public String deleteCourse(UUID course_id) throws Exception {

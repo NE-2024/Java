@@ -1,5 +1,7 @@
 package rw.ac.rca.studentCourse.v1.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import rw.ac.rca.studentCourse.v1.dto.requests.AssignMultipleCoursesToStudentDTO;
@@ -15,6 +17,7 @@ public interface StudentCourseService {
     StudentCourse registerStudentToCourse(UUID student_id, UUID course_id, CreateStudentCourseDTO createStudentCourseDTO) throws Exception;
     StudentCourse getStudentCourseById(UUID studentCourse_id) throws Exception;
     List<StudentCourse> getAllStudentCourses() throws Exception;
+    Page<StudentCourse> getAllStudentCoursesPaginated(Pageable pageable) throws Exception;
     String deleteStudentCourse(UUID studentCourse_id) throws Exception;
     StudentCourse updateStudentCourse(UUID studentCourse_id, CreateStudentCourseDTO createStudentCourseDTO) throws Exception;
     // assign multiple courses to student

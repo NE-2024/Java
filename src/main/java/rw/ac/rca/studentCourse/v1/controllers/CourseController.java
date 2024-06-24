@@ -1,6 +1,10 @@
 package rw.ac.rca.studentCourse.v1.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rw.ac.rca.studentCourse.v1.dto.requests.CreateCourseDTO;
@@ -40,6 +44,18 @@ public class CourseController {
     public ResponseEntity<ApiResponse> getAllCourses() {
         try {
             return ResponseEntity.ok(new ApiResponse(true, "Courses retrieved successfully!", courseService.getAllCourses()));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    // get all courses paginated and sorted
+    @GetMapping("all/paginated")
+    ResponseEntity<ApiResponse> getAllPaginated(@RequestParam("size") int size, @RequestParam("page") int page){
+        Sort sort = Sort.by(Sort.Order.asc("courseName"), Sort.Order.asc("courseCode"));
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        try{
+            return ResponseEntity.ok(new ApiResponse(true, "Data retrieved successfully!", courseService.getAllCoursesPaginated(pageable)));
         } catch (Exception e) {
             return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
         }

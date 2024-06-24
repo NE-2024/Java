@@ -1,6 +1,9 @@
 package rw.ac.rca.studentCourse.v1.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rw.ac.rca.studentCourse.v1.dto.requests.AssignMultipleCoursesToStudentDTO;
@@ -45,6 +48,18 @@ public class StudentCourseController {
         } catch (Exception e) {
             return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
 
+        }
+    }
+    // getting all students paginated and sorted
+    @GetMapping("all/paginated")
+    ResponseEntity<ApiResponse> getAllPaginated(@RequestParam("size") int size, @RequestParam("page") int page){
+        Sort sort = Sort.by(Sort.Order.desc("studentMarks"), Sort.Order.asc("studentNumber"));
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        try{
+            return ResponseEntity.ok(new ApiResponse(true, "Data retrieved successfully!", studentCourseService.getAllStudentCoursesPaginated(pageable)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     // delete studentCourse

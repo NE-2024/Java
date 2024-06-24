@@ -1,6 +1,9 @@
 package rw.ac.rca.studentCourse.v1.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -33,8 +36,9 @@ public class StudentServiceImpl implements StudentService {
                 createStudentDTO.getLastName(),
                 createStudentDTO.getEmail(),
                 createStudentDTO.getPhoneNumber(),
-                createStudentDTO.getStudentNumber(),
-                createStudentDTO.getSchoolName()
+                createStudentDTO.getSchoolName(),
+                createStudentDTO.getStudentNumber()
+
         );
         try {
            return studentRepository.save(student);
@@ -57,6 +61,17 @@ public class StudentServiceImpl implements StudentService {
             throw new Exception("Failed to get students");
         }
     }
+
+    @Override
+    public Page<Student> getAllStudentsPaginated(Pageable pageable) throws Exception {
+
+            try{
+                return studentRepository.findAll(pageable);
+            }catch(Exception exception){
+                ExceptionUtils.handleThrowable(exception);
+                return null;
+            }
+        };
 
     @Override
     public String deleteStudent(UUID student_id) throws Exception {

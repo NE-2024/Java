@@ -1,9 +1,12 @@
 package rw.ac.rca.studentCourse.v1.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
+import rw.ac.rca.studentCourse.v1.payload.ApiResponse;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -19,15 +22,18 @@ public class StudentCourse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID studentCourse_id;
+    private UUID id;
 
     @ManyToOne
+    @JoinColumn(name = "student_id")
     private Student student;
 
     @ManyToOne
+    @JoinColumn(name = "course_id")
     private Course course;
 
-    private Integer studentMarks;
+    @Column(name = "student_marks")
+    private Integer studentMarks=0;
 
     public StudentCourse( Student student, Course course, Integer studentMarks) {
         this.student = student;
@@ -42,5 +48,8 @@ public class StudentCourse {
     public StudentCourse(Student student, Course course) {
         this.student = student;
         this.course = course;
+    }
+
+    public StudentCourse(ResponseEntity<ApiResponse> student, ResponseEntity<ApiResponse> course, Integer studentMarks) {
     }
 }

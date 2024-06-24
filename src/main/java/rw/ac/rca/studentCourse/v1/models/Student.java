@@ -1,5 +1,6 @@
 package rw.ac.rca.studentCourse.v1.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,8 +38,7 @@ public class Student {
     @NotNull
     private String studentNumber;
 
-    @OneToMany(mappedBy = "course")
-    private List<StudentCourse> studentCourseList;
+
 
     public Student(String firstName, String lastName, String email, String phoneNumber, String schoolName, String studentNumber) {
         this.firstName = firstName;

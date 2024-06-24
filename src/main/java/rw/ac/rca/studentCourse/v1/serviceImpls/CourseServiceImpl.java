@@ -8,6 +8,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import rw.ac.rca.studentCourse.v1.dto.requests.CreateCourseDTO;
 import rw.ac.rca.studentCourse.v1.dto.responses.CourseDTOMapper;
 import rw.ac.rca.studentCourse.v1.dto.responses.StudentCourseMapperDTO;
+import rw.ac.rca.studentCourse.v1.exceptions.ResourceNotFoundException;
 import rw.ac.rca.studentCourse.v1.models.Course;
 import rw.ac.rca.studentCourse.v1.payload.ApiResponse;
 import rw.ac.rca.studentCourse.v1.repositories.CourseRepository;
@@ -23,85 +24,63 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseDTOMapper courseDTOMapper;
+
     @Override
-    public ResponseEntity<ApiResponse> createCourse( CreateCourseDTO createCourseDTO) throws Exception {
+    public Course createCourse(CreateCourseDTO createCourseDTO) throws Exception {
         Course course = new Course(
                 createCourseDTO.getCourseName(),
                 createCourseDTO.getCourseCode(),
                 createCourseDTO.getPassMark()
         );
         try {
-            courseRepository.save(course);
-            return ResponseEntity.ok(new ApiResponse(true, "Course saved successfully", course));
-        } catch (HttpServerErrorException.InternalServerError e){
-            return ResponseEntity.status(500).body(new ApiResponse(
-                    false,
-                    "Failed to create the Course"
-            ));
+            return courseRepository.save(course);
+        } catch (HttpServerErrorException.InternalServerError e) {
+            throw new Exception("Failed to create the course");
         }
     }
 
     @Override
-    public ResponseEntity<ApiResponse> getCourseById(UUID course_id) throws Exception {
-        if(courseRepository.existsById(course_id)){
+    public Course getCourseById(UUID course_id)  {
+        return courseRepository.findById(course_id).orElseThrow(() -> new ResourceNotFoundException("Course", "id", course_id.toString()));
+    }
+
+    @Override
+    public List<Course> getAllCourses() throws Exception {
+        try {
+            return  courseRepository.findAll();
+        } catch (Exception e) {
+            throw new Exception("Failed to get courses");
+        }
+    }
+
+    @Override
+    public String deleteCourse(UUID course_id) throws Exception {
+        if (courseRepository.existsById(course_id)) {
             try {
-                Optional<Course> course = courseRepository.findById(course_id);
-                return ResponseEntity.ok().body(new ApiResponse(
-                        true,
-                        "Successfully fetched the course",
-                        course.map(courseDTOMapper)
-                ));
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ApiResponse(false, "Failed to get course"));
+                courseRepository.deleteById(course_id);
+                return "Course deleted successfully";
+            } catch (HttpServerErrorException.InternalServerError e) {
+                throw new Exception("Failed to delete course");
             }
         } else {
-            return ResponseEntity.ok(new ApiResponse(false, "Course not found"));
+            throw new ResourceNotFoundException("Course", "id", course_id.toString());
         }
     }
 
     @Override
-    public ResponseEntity<ApiResponse> getAllCourses() throws Exception {
-        try {
-            List<Course> courses = courseRepository.findAll();
-            return ResponseEntity.ok().body(new ApiResponse(
-                    true,
-                    "Successfully fetched all courses",
-                    courses.stream().map(courseDTOMapper)
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.ok(new ApiResponse(false, "Failed to get courses"));
-        }
-    }
-
-    @Override
-    public ResponseEntity<ApiResponse> deleteCourse(UUID course_id) throws Exception {
-       if(courseRepository.existsById(course_id)){
-           try {
-               courseRepository.deleteById(course_id);
-               return ResponseEntity.ok(new ApiResponse(true, "Course deleted successfully"));
-           } catch (Exception e) {
-               return ResponseEntity.ok(new ApiResponse(false, "Failed to delete course"));
-           }
-       } else {
-           return ResponseEntity.ok(new ApiResponse(false, "Course not found"));
-       }
-    }
-
-    @Override
-    public ResponseEntity<ApiResponse> updateCourse(UUID course_id, CreateCourseDTO createCourseDTO) throws Exception {
-        if(courseRepository.existsById(course_id)){
+    public Course updateCourse(UUID course_id, CreateCourseDTO createCourseDTO) throws Exception {
+        if (courseRepository.existsById(course_id)) {
             Course course = new Course(
                     createCourseDTO.getCourseName(),
                     createCourseDTO.getCourseCode(),
                     createCourseDTO.getPassMark());
             try {
-                courseRepository.save(course);
-                return ResponseEntity.ok(new ApiResponse(true, "Course updated successfully", course));
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ApiResponse(false, "Failed to update course"));
+                return courseRepository.save(course);
+            } catch (HttpServerErrorException.InternalServerError e) {
+                throw new Exception("Failed to update the course");
             }
         } else {
-            return ResponseEntity.ok(new ApiResponse(false, "Course not found"));
+            throw new ResourceNotFoundException("Course", "id", course_id.toString());
         }
     }
 }

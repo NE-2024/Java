@@ -16,7 +16,9 @@ import rw.ac.rca.studentCourse.v1.payload.ApiResponse;
 import rw.ac.rca.studentCourse.v1.repositories.CourseRepository;
 import rw.ac.rca.studentCourse.v1.repositories.StudentCourseRepository;
 import rw.ac.rca.studentCourse.v1.repositories.StudentRepository;
+import rw.ac.rca.studentCourse.v1.services.CourseService;
 import rw.ac.rca.studentCourse.v1.services.StudentCourseService;
+import rw.ac.rca.studentCourse.v1.services.StudentService;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,114 +31,83 @@ public class StudentCourseServiceImpl implements StudentCourseService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final StudentCourseRepository studentCourseRepository;
+    private final StudentService studentService;
+    private final CourseService courseService;
     private StudentCourseMapperDTO studentCourseMapperDTO;
     @Override
-    public ResponseEntity<ApiResponse> registerStudentToCourse(UUID student_id, UUID course_id, CreateStudentCourseDTO createStudentCourseDTO) throws Exception {
-
+    public StudentCourse registerStudentToCourse(UUID student_id, UUID course_id, CreateStudentCourseDTO createStudentCourseDTO) throws Exception {
+       Student student = studentService.getStudentById(student_id);
+        Course course = courseService.getCourseById(course_id);
         StudentCourse studentCourse = new StudentCourse(
+                student,
+                course,
                 createStudentCourseDTO.getStudentMarks()
         );
         try {
-           studentCourseRepository.save(studentCourse);
-            return ResponseEntity.ok(new ApiResponse(true, "Student registered to course successfully", studentCourse));
+            return studentCourseRepository.save(studentCourse);
         } catch (HttpServerErrorException.InternalServerError e){
-            return ResponseEntity.status(500).body(new ApiResponse(
-                    false,
-                    "Failed to create the Student Course"
-            ));
+            throw new Exception("Failed to register student to course");
         }
     }
 
     @Override
-    public ResponseEntity<ApiResponse> getStudentCourseById(UUID studentCourse_id) throws Exception {
-        if(studentCourseRepository.existsById(studentCourse_id)){
-            try {
-                Optional<StudentCourse> studentCourse = studentCourseRepository.findById(studentCourse_id);
-                return ResponseEntity.ok().body(new ApiResponse(
-                        true,
-                        "Successfully fetched the student course",
-                        studentCourse.map(studentCourseMapperDTO)
-                ));
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ApiResponse(false, "Failed to get student course"));
-            }
-        } else {
-            return ResponseEntity.ok(new ApiResponse(false, "Student course not found"));
-        }
+    public StudentCourse getStudentCourseById(UUID studentCourse_id) throws Exception {
+      return studentCourseRepository.findById(studentCourse_id).orElseThrow(()-> new Exception("Student course not found"));
     }
 
     @Override
-    public ResponseEntity<ApiResponse> getAllStudentCourses() throws Exception {
+    public List<StudentCourse> getAllStudentCourses() throws Exception {
         try {
-            List<StudentCourse> studentCourses = studentCourseRepository.findAll();
-            return ResponseEntity.ok().body(new ApiResponse(
-                    true,
-                    "Successfully fetched all student courses",
-                    studentCourses.stream().map(studentCourseMapperDTO)
-            ));
+            return studentCourseRepository.findAll();
         } catch (Exception e) {
-            return ResponseEntity.ok(new ApiResponse(false, "Failed to get student courses"));
-        }
+            throw new Exception("Failed to get student courses");
+    }
     }
 
     @Override
-    public ResponseEntity<ApiResponse> deleteStudentCourse(UUID studentCourse_id) throws Exception {
+    public String deleteStudentCourse(UUID studentCourse_id) throws Exception {
         if(studentCourseRepository.existsById(studentCourse_id)){
             try {
                 studentCourseRepository.deleteById(studentCourse_id);
-                return ResponseEntity.ok().body(new ApiResponse(
-                        true,
-                        "Successfully deleted the student course"
-                ));
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ApiResponse(false, "Failed to delete student course"));
+                return "Student course deleted successfully";
+            } catch (Exception e){
+                throw new Exception("Failed to delete the student course");
             }
         } else {
-            return ResponseEntity.ok(new ApiResponse(false, "Student course not found"));
+            return "Student course not found";
         }
     }
 
     @Override
-    public ResponseEntity<ApiResponse> updateStudentCourse(UUID studentCourse_id, CreateStudentCourseDTO createStudentCourseDTO) throws Exception {
+    public StudentCourse updateStudentCourse(UUID studentCourse_id, CreateStudentCourseDTO createStudentCourseDTO) throws Exception {
 
-        if(studentCourseRepository.existsById(studentCourse_id)){
+        if (studentCourseRepository.existsById(studentCourse_id)) {
             StudentCourse studentCourse = studentCourseRepository.findById(studentCourse_id).get();
             studentCourse.setStudentMarks(createStudentCourseDTO.getStudentMarks());
             try {
-                studentCourseRepository.save(studentCourse);
-                return ResponseEntity.ok().body(new ApiResponse(
-                        true,
-                        "Successfully updated the student course",
-                        studentCourse
-                ));
+                return studentCourseRepository.save(studentCourse);
             } catch (Exception e) {
-                return ResponseEntity.ok(new ApiResponse(false, "Failed to update student course"));
+                throw new Exception("Failed to update student course");
             }
         } else {
-            return ResponseEntity.ok(new ApiResponse(false, "Student course not found"));
+            throw new Exception("Student course not found");
         }
     }
 
     // assign multiple courses to student
     @Override
-    public ResponseEntity<ApiResponse> assignCoursesToStudent(@RequestBody AssignMultipleCoursesToStudentDTO assignMultipleCoursesToStudentDTO) throws Exception {
-           Student student = studentRepository.findById(assignMultipleCoursesToStudentDTO.getStudent_id()).get();
-            List<Course> courses = courseRepository.findAllById(assignMultipleCoursesToStudentDTO.getCourse_id());
-            try {
-                for (Course course: courses){
-                    StudentCourse studentCourse = new StudentCourse (
-                            student,
-                            course
-                    );
-                    studentCourseRepository.save(studentCourse);
-                }
-                return ResponseEntity.ok().body(new ApiResponse(
-                        true,
-                        "Successfully assigned courses to student"
-                ));
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ApiResponse(false, "Failed to assign courses to student"));
-            }
+    public StudentCourse assignCoursesToStudent(@RequestBody AssignMultipleCoursesToStudentDTO assignMultipleCoursesToStudentDTO) throws Exception {
+        try {
+            Student student = studentService.getStudentById(assignMultipleCoursesToStudentDTO.getStudent_id());
+            List<StudentCourse> studentCourses=assignMultipleCoursesToStudentDTO.getCourse_id().stream().map(course_id -> {
+                Course course = courseService.getCourseById(course_id);
+                return new StudentCourse(student, course, 0);
+            }).toList();
+            studentCourseRepository.saveAll(studentCourses);
+        } catch (HttpServerErrorException.InternalServerError e) {
+            throw new Exception("Failed to assign courses to student");
+        }
+        return null;
     }
-
 }
+

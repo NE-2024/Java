@@ -9,7 +9,7 @@ public class StudentCourseMapperDTO implements Function<StudentCourse, StudentCo
     @Override
     public StudentCourseDTO apply(StudentCourse studentCourse) {
         return new StudentCourseDTO(
-                studentCourse.getStudentCourse_id(),
+                studentCourse.getId(),
                 new StudentDTOMapper().apply(studentCourse.getStudent()),
                 new CourseDTOMapper().apply(studentCourse.getCourse()),
                 studentCourse.getStudentMarks()

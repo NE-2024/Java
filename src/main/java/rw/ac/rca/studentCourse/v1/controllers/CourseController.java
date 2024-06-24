@@ -18,27 +18,51 @@ public class CourseController {
     // create course
    @PostMapping("/create")
     public ResponseEntity<ApiResponse> createCourse(@RequestBody CreateCourseDTO createCourseDTO) throws Exception{
-        return courseService.createCourse(createCourseDTO);
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Course created successfully!", courseService.createCourse(createCourseDTO)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
     // get course by id
     @GetMapping("/get_course/{course_id}")
-    public ResponseEntity<ApiResponse> getCourseById(@PathVariable UUID course_id) throws Exception{
-        return courseService.getCourseById(course_id);
+    public ResponseEntity<ApiResponse> getCourseById(@PathVariable UUID course_id){
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Course retrieved successfully!", courseService.getCourseById(course_id)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
     // get all courses
     @GetMapping("/get_all")
-    public ResponseEntity<ApiResponse> getAllCourses() throws Exception{
-        return courseService.getAllCourses();
+    public ResponseEntity<ApiResponse> getAllCourses() {
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Courses retrieved successfully!", courseService.getAllCourses()));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     // delete course
     @DeleteMapping("/delete_course/{course_id}")
-    public ResponseEntity<ApiResponse> deleteCourse(@PathVariable UUID course_id) throws Exception{
-        return courseService.deleteCourse(course_id);
+    public ResponseEntity<ApiResponse> deleteCourse(@PathVariable UUID course_id) {
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Course deleted successfully!", courseService.deleteCourse(course_id)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+        }
     }
     // update course
     @PutMapping("/update_course/{course_id}")
-    public ResponseEntity<ApiResponse> updateCourse(@PathVariable UUID course_id, @RequestBody CreateCourseDTO createCourseDTO) throws Exception{
-        return courseService.updateCourse(course_id, createCourseDTO);
+    public ResponseEntity<ApiResponse> updateCourse(@PathVariable UUID course_id, @RequestBody CreateCourseDTO createCourseDTO){
+       try {
+              return ResponseEntity.ok(new ApiResponse(true, "Course updated successfully!", courseService.updateCourse(course_id, createCourseDTO)));
+         } catch (Exception e) {
+              return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+       }
     }
 
 }

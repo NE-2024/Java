@@ -1,5 +1,6 @@
 package rw.ac.rca.studentCourse.v1.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class Course {
     @NotNull
     private String courseCode;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "course")
     private List<StudentCourse> studentCourseList;
 

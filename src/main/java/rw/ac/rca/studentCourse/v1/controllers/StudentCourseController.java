@@ -19,32 +19,60 @@ public class StudentCourseController {
     // create student course
     @PostMapping("/create/{student_id}/{course_id}")
     public ResponseEntity<ApiResponse> createStudentCourse(@PathVariable UUID student_id, @PathVariable UUID course_id, @RequestBody CreateStudentCourseDTO createStudentCourseDTO) throws Exception{
-        return studentCourseService.registerStudentToCourse(student_id, course_id, createStudentCourseDTO);
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Student course created successfully!", studentCourseService.registerStudentToCourse(student_id, course_id, createStudentCourseDTO)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+        }
     }
    // get studentCourse by Id
     @GetMapping("/get_studentCourse/{studentCourse_id}")
     public ResponseEntity<ApiResponse> getStudentCourseById(@PathVariable UUID studentCourse_id) throws Exception{
-        return studentCourseService.getStudentCourseById(studentCourse_id);
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Student course retrieved successfully!", studentCourseService.getStudentCourseById(studentCourse_id)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
     // get all studentCourses
-    @GetMapping("/get_all")
+    @GetMapping("/get-all")
     public ResponseEntity<ApiResponse> getAllStudentCourses() throws Exception{
-        return studentCourseService.getAllStudentCourses();
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Student courses retrieved successfully!", studentCourseService.getAllStudentCourses()));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
     // delete studentCourse
     @DeleteMapping("/delete_studentCourse/{studentCourse_id}")
-    public ResponseEntity<ApiResponse> deleteStudentCourse(@PathVariable UUID studentCourse_id) throws Exception{
-        return studentCourseService.deleteStudentCourse(studentCourse_id);
+    public ResponseEntity<ApiResponse> deleteStudentCourse(@PathVariable UUID studentCourse_id) {
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Student course deleted successfully!", studentCourseService.deleteStudentCourse(studentCourse_id)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     // update studentCourse
     @PutMapping("/update_studentCourse/{studentCourse_id}")
-    public ResponseEntity<ApiResponse> updateStudentCourse(@PathVariable UUID studentCourse_id, @RequestBody CreateStudentCourseDTO createStudentCourseDTO) throws Exception{
-        return studentCourseService.updateStudentCourse(studentCourse_id, createStudentCourseDTO);
+    public ResponseEntity<ApiResponse> updateStudentCourse(@PathVariable UUID studentCourse_id, @RequestBody CreateStudentCourseDTO createStudentCourseDTO) {
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Student course updated successfully!", studentCourseService.updateStudentCourse(studentCourse_id, createStudentCourseDTO)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     // assign multiple courses to student
     @PostMapping("/assign_courses")
     public ResponseEntity<ApiResponse> assignCoursesToStudent(@RequestBody AssignMultipleCoursesToStudentDTO assignMultipleCoursesToStudentDTO) throws Exception{
-        return studentCourseService.assignCoursesToStudent(assignMultipleCoursesToStudentDTO);
+        try {
+            return ResponseEntity.ok(new ApiResponse(true, "Courses assigned to student successfully!", studentCourseService.assignCoursesToStudent(assignMultipleCoursesToStudentDTO)));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage(), null), org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

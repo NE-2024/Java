@@ -19,14 +19,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "courses")
+@Table(name = "courses", uniqueConstraints = {@UniqueConstraint(columnNames = {"course_code"})})
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID course_id;
     @NotNull
+    @Column(name = "course_name")
     private String courseName;
     @NotNull
+    @Column(name = "course_code")
     private String courseCode;
 
     @JsonIgnore

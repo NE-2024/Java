@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,11 +52,11 @@ public class User {
     @NotNull
     private String password;
 
-    public User(String email, String username, String national_id, String profilePicture ,String password) {
+    public User(String email, String username, String national_id, String gender ,String password) {
         this.email = email;
         this.username = username;
         this.national_id = national_id;
         this.password = password;
-        this.profilePicture = profilePicture;
+        this.gender = gender;
     }
 }

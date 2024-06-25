@@ -20,22 +20,27 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "students")
+@Table(name = "students", uniqueConstraints = {@UniqueConstraint(columnNames = {"student_number", "email"})})
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID student_id;
     @NotNull
+    @Column(name = "first_name")
     private String firstName;
     @NotNull
+    @Column(name = "last_name")
     private String lastName;
     @NotNull
     private String email;
     @NotNull
+    @Column(name = "phone_number")
     private String phoneNumber;
     @NotNull
+    @Column(name = "school_name")
     private String schoolName;
     @NotNull
+    @Column(name = "student_number")
     private String studentNumber;
 
 
